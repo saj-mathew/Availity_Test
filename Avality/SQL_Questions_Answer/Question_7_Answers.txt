@@ -1,0 +1,21 @@
+﻿-- 7-A
+SELECT CONCAT (FirstName,' ',LastName) FROM Customer WHERE LastName like '5%' ORDER BY CONCAT (FirstName,' ',LastName) DESC;
+
+-- 7-B
+SELECT DISTINCT Cust_Name, SUM(Cost) OVER (PARTITION BY Cust_Name) FROM 
+(SELECT CONCAT(cust. FirstName, cust.LastName) Cust_Name, ord.OrderDate, ordLine. ItemName, (ordLine.Cost * ordLine.Quantity) Cost
+FROM Customer cust
+LEFT JOIN Orders ord
+ON cust.CustId = ord.CustId
+LEFT JOIN OrderLine ordLine
+ON ord.OrderId = ordLine.OrderId) WHERE OrderDate >= DATE_ADD(CURRENT _DATE() , INTERVAL -6 MONTH);
+
+-- 7-C
+SELECT * FROM (SELECT DISTINCT Cust_Name, SUM(Cost) OVER (PARTITION BY Cust _Name) Total_Order FROM
+(SELECT CONCAT(cust. FirstName cust.LastName) Cust_Name,ord.OrderDate,ordLine.ItemName, (ordline.Cost * ordLine.Quantity) Cost
+FROM Customer cust
+LEFT JOIN Orders ord
+ON cust.CustId = ord.CustId
+LEFT JOIN OrderLine ordLine
+ON ord.OrderId = ordLine.OrderId) WHERE OrderDate >= DATE_ADD(CURRENT_DATE() , INTERVAL -6 MONTH)) 
+WHERE Total_Order BETWEEN 100 AND 500;
